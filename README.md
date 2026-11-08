@@ -1,62 +1,27 @@
-# Optical Photon Quantum Computer
+# Optical photon simulator for quantum computation
 
-An HTML, CSS, and JavaScript simulator based on §7.4 of Nielsen & Chuang, *Quantum Computation and Quantum Information*. Its dark theme, panels, and settings/visualization layout follow the neighboring `harmonic-oscillator-quantum-computer` project.
-
-## Run locally
-
-Requires Python 3 and Make. No external packages need to be installed.
-
-```sh
-make run
-```
-
-Open [http://127.0.0.1:3001](http://127.0.0.1:3001). To change the port, use `make run PORT=3002`.
-
-The command serves only the `public` directory using Python's built-in HTTP server:
-
-```sh
-python3 -m http.server 3001 --bind 127.0.0.1 --directory public
-```
-
-## Experiments
-
-- **Two-photon CNOT** — H on the target, a Kerr interaction on the two middle modes, then H on the target again. At ξ = χL = π, this implements CNOT. Input `|+0⟩` produces a Bell state.
-- **Single-photon interference** — A Mach–Zehnder arrangement, `B(−θ) P(φ) B(θ)`. Adjust the relative phase and beam-splitter mixing angle to explore output interference.
-- **Intermediate states** — Inspect complex amplitudes and logical-basis probabilities at the input, after the first BS/H, after P/Kerr, and at the output.
-- **Measurements** — Take one or 1,000 independent Born-rule samples, each from a fresh preparation of the state at the selected point. Changing the input, phase, mixing angle, or observation point clears the history. Measurement collapse is not propagated through the remaining circuit.
-- **Phase sweep** — Animate the phase parameter. This is a parameter sweep, not a simulation of photon flight or time evolution.
-
-The phase plot always describes the final output. The statistics, complex amplitudes, and probability bars describe the selected observation point. CNOT fidelity is `|⟨ψideal|ψ⟩|²` for the selected input; it is not a general gate fidelity. Concurrence is `2|ad − bc|` for a pure two-qubit state.
-
-## Equations and conventions
-
-A single qubit uses `|0⟩L = |01⟩` and `|1⟩L = |10⟩`. The upper rail represents logical 0. Single-qubit Fock notation uses `(lower, upper)` order.
-
-For two qubits, the arrangement matches p.294 of the textbook. Four-mode occupation numbers are listed from the top rail to the bottom rail.
+A demo built with HTML, CSS, and JavaScript that implements CNOT using beam splitters, phase shifters, and an ideal nonlinear Kerr interaction.
+It uses the dual-rail encoding and optical gates described in Nielsen & Chuang, *Quantum Computation and Quantum Information*, §7.4.
 
 ```text
-|00⟩L = |1001⟩     |01⟩L = |1010⟩
-|10⟩L = |0101⟩     |11⟩L = |0110⟩
-
-B(θ) = [[cos θ, −sin θ], [sin θ, cos θ]]
-P(φ) = diag(1, exp(iφ))
-H = B(π/4) diag(1, −1)
-K(ξ) = diag(1, 1, 1, exp(iξ))
-U_CNOT(ξ) = (I ⊗ H) K(ξ) (I ⊗ H)
+|00⟩_L = |1001⟩
+|01⟩_L = |1010⟩
+|10⟩_L = |0101⟩
+|11⟩_L = |0110⟩
 ```
 
-The beam splitter uses the **explicit real matrix** in Eq. (7.35), avoiding ambiguity in exponential expressions and mode ordering. With the standard Pauli Y, this matrix is `exp(−iθY)`. The phase shifter acts on the logical-1 rail. The inverse beam splitter in the MZI uses angle `−θ`.
+The four digits give the photon count in each rail, from top to bottom, following the arrangement on p.294 of the textbook.
 
-Loss, detector noise, photon distinguishability, and single-photon sources are not modeled. Computation stays within the logical subspace with one photon per dual-rail pair; this is not a simulator for arbitrary Fock states, Hong–Ou–Mandel interference, or KLM circuits. See §7.4.3 for the physical challenge of achieving strong Kerr nonlinearities between single photons.
+$$
+K(\xi) = \operatorname{diag}(1,1,1,e^{i\xi}), \qquad \xi = \chi L
+$$
 
-Reference: Nielsen & Chuang, [*Quantum Computation and Quantum Information*](https://doi.org/10.1017/CBO9780511976667), §7.4, Eqs. (7.21), (7.35), (7.41)–(7.46), and Exercise 7.10. The relevant sections were checked against the textbook and errata PDFs in the workspace. The app does not serve those PDFs.
+$$
+U(\xi) = (I \otimes H)K(\xi)(I \otimes H)
+$$
 
-## Validation
-
-Tests require Node.js 18 or later. Node.js is not needed to serve the simulator.
-
-```sh
-npm test
-```
-
-Tests cover the CNOT truth table, superposition outputs including relative phases, Bell-state generation, analytic Kerr responses, MZI interference, normalization at every stage, inverse beam-splitter transformations, and measurement sampling.
+At ξ = π, the result matches the logical CNOT output. Input |+0⟩ produces the Bell state (|00⟩ + |11⟩)/√2.
+The single-photon mode simulates a Mach–Zehnder interferometer, B(−θ)P(φ)B(θ), where P(φ) = diag(1, exp(iφ)) and θ = π/4 gives a 50:50 beam splitter.
+Fidelity measures agreement with the ideal CNOT output for the selected input and observation point; it is not a general gate fidelity.
+Loss, photon distinguishability, detector imperfections, and physical state-preparation or measurement hardware are not modeled.
+The Kerr interaction is idealized; the difficulty of achieving a π phase shift between single photons is discussed in §7.4.3.
