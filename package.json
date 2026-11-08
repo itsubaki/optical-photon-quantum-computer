@@ -1,0 +1,8 @@
+{
+  "name": "optical-photon-quantum-computer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  }
+}
