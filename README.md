@@ -13,7 +13,7 @@ It uses the dual-rail encoding and optical gates described in Nielsen & Chuang, 
 The four digits give the photon count in each rail, from top to bottom, following the arrangement on p.294 of the textbook.
 
 $$
-K(\xi) = \operatorname{diag}(1,1,1,e^{i\xi}), \qquad \xi = \chi L
+K(\xi) = \mathrm{diag}(1,1,1,e^{i\xi}), \qquad \xi = \chi L
 $$
 
 $$
