@@ -1,4 +1,4 @@
-import { simulate, abs2, fidelity, concurrence, sample, TAU } from './optics.js';
+import { simulate, abs2, fidelity, concurrence, TAU } from './optics.js';
 
 const $ = id => document.getElementById(id);
 const inputs = {
@@ -7,7 +7,7 @@ const inputs = {
 };
 const stageLabels = { cnot: ['Input', 'After the first H', 'After the Kerr interaction', 'Output'], mzi: ['Input', 'After the first BS', 'After the phase shifter', 'Output'] };
 const settings = { cnot: { input: 'plus0', phi: Math.PI }, mzi: { input: '0', phi: Math.PI / 2 } };
-let mode = 'cnot', theta = Math.PI / 4, stage = 3, counts = [0, 0, 0, 0], snapshot;
+let mode = 'cnot', theta = Math.PI / 4, stage = 3, snapshot;
 let playing = false, frame, previousTime = null;
 const clean = x => Math.abs(x) < 0.00005 ? 0 : x;
 function angleLabel(x) {
@@ -24,22 +24,13 @@ function complexLabel(a) {
 }
 const labels = () => mode === 'cnot' ? ['|00⟩', '|01⟩', '|10⟩', '|11⟩'] : ['|0⟩', '|1⟩'];
 function options() { return { mode, input: settings[mode].input, phi: settings[mode].phi, theta }; }
-function clearShots() {
-  counts = labels().map(() => 0);
-  $('measurement-result').textContent = 'No shots yet. Each measurement uses a fresh preparation of the state at the selected point.';
-  $('clear-shots').disabled = true;
-}
 function makeBars() {
-  $('probability-bars').innerHTML = labels().map(label => `<div class="bar-item"><span class="ket">${label}</span><div class="bar-tracks"><div class="bar-bg"><div class="bar-fill"></div></div><div class="bar-bg measured"><div class="bar-fill"></div></div></div><span class="val"><span>—</span><small>No shots</small></span></div>`).join('');
+  $('probability-bars').innerHTML = labels().map(label => `<div class="bar-item"><span class="ket">${label}</span><div class="bar-bg"><div class="bar-fill"></div></div><span class="val">—</span></div>`).join('');
 }
 function updateBars(probs) {
-  const total = counts.reduce((a, v) => a + v, 0);
   [...$('probability-bars').children].forEach((row, i) => {
-    const fills = row.querySelectorAll('.bar-fill');
-    fills[0].style.width = `${100 * probs[i]}%`;
-    fills[1].style.width = `${total ? 100 * counts[i] / total : 0}%`;
-    row.querySelector('.val > span').textContent = `${(100 * probs[i]).toFixed(1)}%`;
-    row.querySelector('small').textContent = total ? `${counts[i].toLocaleString('en-US')} shots · ${(100 * counts[i] / total).toFixed(1)}%` : 'No shots';
+    row.querySelector('.bar-fill').style.width = `${Math.max(0, 100 * probs[i])}%`;
+    row.querySelector('.val').textContent = `${(100 * probs[i]).toFixed(1)}%`;
   });
 }
 function drawCircuit() {
@@ -131,6 +122,7 @@ function setMode(next) {
   [['zero', '0'], ['half', 'π/2'], ['pi', 'π']].forEach(([id, value]) => $(id).textContent = `${symbol} = ${value}`);
   $('stat1-label').textContent = mode === 'cnot' ? 'State fidelity with ideal CNOT output' : 'Upper-rail probability P(0)';
   $('stat2-label').textContent = mode === 'cnot' ? 'Entanglement · concurrence' : 'Lower-rail relative phase';
+  $('prob-note').textContent = mode === 'cnot' ? 'Use the fidelity above to check agreement with the ideal logical CNOT output at ξ = π.' : 'The probabilities describe the state at the selected observation point in the interferometer.';
   $('photon-count').textContent = mode === 'cnot' ? '2' : '1';
   $('photon-badge').textContent = mode === 'cnot' ? '2 PHOTONS · 4 MODES' : '1 PHOTON · 2 MODES';
   const names = mode === 'cnot' ? ['Input', 'After H', 'After Kerr', 'Output'] : ['Input', 'After BS', 'After P', 'Output'];
@@ -141,7 +133,7 @@ function setMode(next) {
   const legendNames = mode === 'cnot' ? ['Fidelity with ideal CNOT output', 'P(11)'] : ['P(0)', 'P(1)'];
   $('chart-legend').innerHTML = legendNames.map((name, i) => `<span><i class="dot" style="background:${i ? 'var(--accent)' : 'var(--green)'}"></i>${name}</span>`).join('') + '<span><i class="dot" style="background:var(--violet)"></i>Current phase</span>';
   $('chart-note').textContent = `Final output as ${symbol} varies with the input fixed. This plot always shows the state after the last optical element, regardless of the selected observation point.`;
-  clearShots(); makeBars(); refresh();
+  makeBars(); refresh();
 }
 document.querySelectorAll('[data-mode]').forEach(b => {
   b.addEventListener('click', () => setMode(b.dataset.mode));
@@ -151,29 +143,19 @@ document.querySelectorAll('[data-mode]').forEach(b => {
     setMode(next); $(`tab-${next}`).focus();
   });
 });
-$('input').addEventListener('change', () => { stop(); settings[mode].input = $('input').value; clearShots(); refresh(); });
-$('phase').addEventListener('input', () => { stop(); settings[mode].phi = Math.max(0, Math.min(TAU, Number($('phase').value))); clearShots(); refresh(); });
-$('theta').addEventListener('input', () => { stop(); theta = Math.max(0, Math.min(Math.PI / 2, Number($('theta').value))); clearShots(); refresh(); });
-for (const [id, value] of [['zero', 0], ['half', Math.PI / 2], ['pi', Math.PI]]) $(id).addEventListener('click', () => { stop(); settings[mode].phi = value; $('phase').value = value; clearShots(); refresh(); });
-document.querySelectorAll('[data-stage]').forEach(b => b.addEventListener('click', () => { stop(); stage = Number(b.dataset.stage); clearShots(); refresh(); }));
+$('input').addEventListener('change', () => { stop(); settings[mode].input = $('input').value; refresh(); });
+$('phase').addEventListener('input', () => { stop(); settings[mode].phi = Math.max(0, Math.min(TAU, Number($('phase').value))); refresh(); });
+$('theta').addEventListener('input', () => { stop(); theta = Math.max(0, Math.min(Math.PI / 2, Number($('theta').value))); refresh(); });
+for (const [id, value] of [['zero', 0], ['half', Math.PI / 2], ['pi', Math.PI]]) $(id).addEventListener('click', () => { stop(); settings[mode].phi = value; $('phase').value = value; refresh(); });
+document.querySelectorAll('[data-stage]').forEach(b => b.addEventListener('click', () => { stop(); stage = Number(b.dataset.stage); refresh(); }));
 $('reset').addEventListener('click', () => {
   settings[mode] = mode === 'cnot' ? { input: 'plus0', phi: Math.PI } : { input: '0', phi: Math.PI / 2 };
   if (mode === 'mzi') { theta = Math.PI / 4; $('theta').value = theta; }
   setMode(mode);
 });
-function measure(shots) {
-  stop(); const probs = snapshot.stages[stage].map(abs2), result = sample(probs, shots);
-  counts = counts.map((n, i) => n + result[i]);
-  const total = counts.reduce((a, n) => a + n, 0);
-  $('measurement-result').textContent = shots === 1 ? `Detected ${labels()[result.findIndex(n => n === 1)]} · ${total.toLocaleString('en-US')} shots total (${stageLabels[mode][stage]})` : `Added 1,000 shots · ${total.toLocaleString('en-US')} shots total (${stageLabels[mode][stage]})`;
-  $('clear-shots').disabled = false; updateBars(probs);
-}
-$('measure-one').addEventListener('click', () => measure(1));
-$('measure-many').addEventListener('click', () => measure(1000));
-$('clear-shots').addEventListener('click', () => { clearShots(); updateBars(snapshot.stages[stage].map(abs2)); });
 $('play').addEventListener('click', () => {
   if (playing) { stop(); return; }
-  playing = true; previousTime = null; clearShots();
+  playing = true; previousTime = null;
   $('play').textContent = 'Ⅱ Pause phase sweep'; $('play').setAttribute('aria-pressed', 'true');
   const tick = time => {
     if (!playing) return;

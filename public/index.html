@@ -82,20 +82,10 @@
 
       <div class="two">
         <section class="panel" aria-labelledby="prob-title">
-          <div class="section-heading">
-            <h2 id="prob-title">Measurement Probabilities</h2><span class="badge" id="basis-badge">LOGICAL BASIS</span>
-          </div>
-          <div class="legend"><span><i class="dot" style="background:var(--accent)"></i>Theoretical
-              probability</span><span><i class="dot" style="background:var(--violet)"></i>Measured frequency</span>
-          </div>
+          <h2 id="prob-title">Logical Qubit Measurement Probabilities</h2>
           <div id="probability-bars"></div>
-          <div class="measurement-actions"><button id="measure-one">Measure once</button><button
-              id="measure-many">Measure 1,000 shots</button><button id="clear-shots" class="text-button"
-              disabled>Clear</button></div>
-          <p id="measurement-result" class="muted" role="status" aria-live="polite">No shots yet. Each measurement uses
-            a fresh preparation of the state at the selected point.</p>
-          <p class="muted">Changing the input, phase, mixing angle, or observation point clears the shot history.
-            Measurements leave the displayed state vector unchanged.</p>
+          <p id="prob-note" class="muted">Use the fidelity above to check agreement with the ideal logical CNOT output
+            at ξ = π.</p>
         </section>
         <section class="panel" aria-labelledby="sweep-title">
           <div class="section-heading">

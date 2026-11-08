@@ -61,24 +61,3 @@ export function simulate({ mode = 'cnot', input = 'plus0', phi = Math.PI, theta 
   const output = stages[3];
   return { stages, output, ideal, probabilities: output.map(abs2), fidelity: fidelity(output, ideal), concurrence: mode === 'cnot' ? concurrence(output) : null };
 }
-
-// Each sample represents a fresh preparation measured in the logical basis.
-export function sample(probabilities, shots, random = Math.random) {
-  if (!Number.isInteger(shots) || shots < 1 || shots > 100000) throw new RangeError('Invalid shot count');
-  const total = probabilities.reduce((a, p) => a + p, 0);
-
-  if (!probabilities.length || probabilities.some(p => !Number.isFinite(p) || p < 0) || Math.abs(total - 1) > 1e-9) throw new RangeError('Probabilities must sum to one');
-  const counts = probabilities.map(() => 0);
-
-  for (let n = 0; n < shots; n++) {
-    let r = random();
-    if (!(r >= 0 && r < 1)) throw new RangeError('Random value must be in [0,1)');
-
-    let chosen = probabilities.length - 1;
-    for (let i = 0; i < probabilities.length; i++) { r -= probabilities[i]; if (r < 0) { chosen = i; break; } }
-
-    counts[chosen]++;
-  }
-
-  return counts;
-}

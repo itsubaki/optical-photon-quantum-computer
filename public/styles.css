@@ -677,61 +677,6 @@ h1 {
     margin-bottom: 0;
 }
 
-.bar-item {
-    grid-template-columns: 50px minmax(0, 1fr) 100px;
-    gap: 9px;
-    margin: 17px 0;
-}
-
-.bar-tracks {
-    display: grid;
-    gap: 4px;
-}
-
-.bar-bg {
-    height: 8px;
-}
-
-.bar-bg.measured {
-    height: 4px;
-}
-
-.measured .bar-fill {
-    background: var(--violet);
-}
-
-.bar-fill {
-    transition: none;
-}
-
-.bar-item .val {
-    font-size: 12px;
-}
-
-.bar-item .val small {
-    display: block;
-    font-size: 10px;
-    color: var(--violet);
-}
-
-.measurement-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-    margin-top: 21px;
-    border-top: 1px solid var(--edge);
-    padding-top: 16px;
-}
-
-.measurement-actions button {
-    padding: 8px 11px;
-}
-
-#measurement-result {
-    color: #c5d4e6;
-    min-height: 40px;
-}
-
 #chart {
     height: 220px;
 }

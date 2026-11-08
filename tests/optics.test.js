@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { simulate, inputState, beamSplitter, fidelity, concurrence, abs2, sample } from '../public/optics.js';
+import { simulate, inputState, beamSplitter, fidelity, concurrence, abs2 } from '../public/optics.js';
 
 const near = (actual, expected, epsilon = 1e-12) => assert.ok(Math.abs(actual - expected) < epsilon, `${actual} ≠ ${expected}`);
 const sameState = (a, b) => near(fidelity(a, b), 1);
@@ -75,13 +75,7 @@ test('BS inverse restores a complex superposition and fidelity ignores global ph
   near(concurrence([[.5, 0], [.5, 0], [.5, 0], [.5, 0]]), 0);
 });
 
-test('Born sampling preserves shots and never selects zero-probability states', () => {
-  let n = 0;
-  assert.deepEqual(sample([.5, 0, 0, .5], 1000, () => (n++ + .5) / 1000), [500, 0, 0, 500]);
-  assert.deepEqual(sample([0, 1], 5, () => 0), [0, 5]);
-  assert.deepEqual(sample([0, 1], 5, () => .999999), [0, 5]);
-  assert.throws(() => sample([.3, .2], 10), RangeError);
-  assert.throws(() => sample([1], -1), RangeError);
+test('invalid simulation parameters and inputs are rejected', () => {
   assert.throws(() => simulate({ phi: NaN }), RangeError);
   assert.throws(() => inputState('cnot', 'missing'), RangeError);
 });
