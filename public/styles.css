@@ -673,10 +673,6 @@ h1 {
     opacity: .48;
 }
 
-.experiment-view>p:last-child {
-    margin-bottom: 0;
-}
-
 #chart {
     height: 220px;
 }

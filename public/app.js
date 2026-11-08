@@ -97,12 +97,6 @@ function refresh() {
     if (relativePhase !== null) relativePhase = Math.atan2(Math.sin(relativePhase), Math.cos(relativePhase));
     $('stat2').textContent = mode === 'cnot' ? concurrence(state).toFixed(3) : relativePhase === null ? '—' : `${clean(relativePhase / Math.PI).toFixed(2)}π`;
     $('state-vector').innerHTML = state.map((a, i) => `<div class="amplitude ${abs2(a) < 1e-10 ? 'zero' : ''}"><span class="ket">${labels()[i]}</span><strong>${complexLabel(a)}</strong><div class="phase-track" aria-hidden="true"><i style="width:${Math.min(100, 100 * abs2(a))}%"></i></div></div>`).join('');
-    if (mode === 'cnot') {
-      const c = concurrence(state);
-      $('observation').textContent = stage !== 3 ? `State: ${stageLabels[mode][stage]}. Fidelity compares this state with the ideal final CNOT output.` : c > .999 ? 'This state is maximally entangled. Explore the relative phases of its complex amplitudes as well as its measurement probabilities.' : Math.abs(settings[mode].phi - Math.PI) < 1e-6 ? 'ξ = π: the circuit implements CNOT. The target flips only when the control is |1⟩.' : 'The final H converts the Kerr conditional phase into a change in the target measurement probabilities.';
-    } else {
-      $('observation').textContent = stage !== 3 ? `State: ${stageLabels[mode][stage]}. The phase shifter preserves rail populations but affects interference after recombination.` : 'The amplitudes in the two rails recombine and interfere. Relative phase is shown only when both amplitudes are nonzero.';
-    }
     updateBars(probs); drawCircuit(); drawChart(); $('error').textContent = '';
   } catch (error) { $('error').textContent = `Unable to display the simulation: ${error.message}`; }
 }
