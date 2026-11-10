@@ -34,3 +34,4 @@ go.work.sum
 
 # Add
 *.pdf
+.DS_Store
