@@ -25,3 +25,13 @@ The single-photon mode simulates a Mach–Zehnder interferometer, B(−θ)P(φ)B
 Fidelity measures agreement with the ideal CNOT output for the selected input and observation point; it is not a general gate fidelity.
 Loss, photon distinguishability, detector imperfections, and physical state-preparation or measurement hardware are not modeled.
 The Kerr interaction is idealized; the difficulty of achieving a π phase shift between single photons is discussed in §7.4.3.
+
+## GitHub Pages
+
+The site is entirely static and needs no build step. Only the contents of `public/` are deployed.
+
+1. In the repository's **Settings → Pages → Build and deployment**, set **Source** to **GitHub Actions**.
+2. Push `.github/workflows/pages.yml` to `main`. The workflow runs automatically when `public/` or the workflow changes on `main`, and can also be started manually from **Actions → Deploy to GitHub Pages → Run workflow**.
+3. After deployment succeeds, open <https://itsubaki.github.io/optical-photon-quantum-computer/>.
+
+For local preview, run `make run` and open <http://127.0.0.1:3001/>.
