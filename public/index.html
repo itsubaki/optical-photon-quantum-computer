@@ -134,14 +134,12 @@
         </div>
       </details>
     </div>
-    <p class="note"><strong>Physical limitations:</strong> This model reproduces the ideal dual-rail encoding and
-      optical gates described in §7.4 of the textbook.
-      It does not model hardware for arbitrary initial-state preparation, measurement, or sequences of arbitrary gates,
-      and is not a practical, general-purpose quantum computer.
-      Photon loss, distinguishability, and detector imperfections are omitted.
-      The Kerr phase shift ξ = π required for CNOT is an ideal assumption;
-      the difficulty of achieving this interaction between single photons is discussed in §7.4.3.
-    </p>
+    <p class="note"><strong>Physical limitations:</strong> Nielsen &amp; Chuang (§7.4.3) identify
+      weak single-photon Kerr interactions and the absorption accompanying a large nonlinear phase shift as major
+      drawbacks of this scheme. They also discuss the difficulty of stabilizing the many coupled interferometers
+      needed for a large quantum computation. This simulator assumes an ideal Kerr interaction, including the π
+      phase shift required for CNOT, to illustrate the gate mechanism; it is not a practical, general-purpose
+      quantum computer.</p>
   </main>
   <script type="module" src="./app.js"></script>
 </body>
